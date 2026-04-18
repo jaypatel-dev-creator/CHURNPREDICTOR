@@ -6,9 +6,9 @@ A full-stack machine learning application that predicts customer churn for a tel
 
 ## Live Demo
 
-- **Frontend:** [Vercel URL]
-- **Backend API:** [\[Render URL\]](https://churnpredictor-6vzb.onrender.com/)
-- **API Docs:** [Render URL](https://churnpredictor-6vzb.onrender.com/docs)
+- **Frontend:** [Vercel URL](https://churnpredictor-zeta.vercel.app/)
+- **Backend API:** [Render URL](https://churnpredictor-6vzb.onrender.com/)
+- **API Docs:** [Render URL/docs](https://churnpredictor-6vzb.onrender.com/docs)
 
 ---
 
@@ -147,6 +147,18 @@ npm run dev
 
 Add `.env` file in frontend root:
 VITE_API_URL=http://localhost:8000
+
+---
+## Known Limitations
+
+**Render cold starts**
+The backend is deployed on Render's free tier. If the service has been inactive for 15+ minutes, the first request will take 30–60 seconds to respond while the container spins back up. Subsequent requests are fast. This is a free tier limitation and would not occur on a paid instance.
+
+**Input range constraints**
+The model was trained on a specific data distribution. Numeric inputs are validated against dataset-based ranges — Age (19–80), Tenure (1–72 months), Monthly Charge (-10 to 118.75), and usage-related fields. Predictions for inputs outside these ranges may be less reliable.
+
+**Model retraining**
+The current model is a static artifact trained on a fixed dataset snapshot. Customer behaviour changes over time — model performance may degrade without periodic retraining on fresh data.
 
 ---
 
