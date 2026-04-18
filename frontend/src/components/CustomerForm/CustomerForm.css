@@ -1,0 +1,74 @@
+/* src/components/CustomerForm/CustomerForm.css */
+
+.customer-form {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    background: #fafafa;
+    transition: border-color 0.2s ease;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #1a1a2e;
+    background: #ffffff;
+}
+
+.submit-button {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0.9rem;
+    background: #1a1a2e;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.submit-button:hover {
+    background: #2d2d5e;
+}
+
+.submit-button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+}

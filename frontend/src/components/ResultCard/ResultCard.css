@@ -1,0 +1,82 @@
+/* src/components/ResultCard/ResultCard.css */
+
+.result-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 480px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.result-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 1.5rem;
+}
+
+.risk-badge {
+    display: inline-block;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+}
+
+.prediction-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 1.5rem;
+}
+
+.probability-section {
+    margin-bottom: 2rem;
+}
+
+.probability-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.probability-bar-container {
+    background: #f0f0f0;
+    border-radius: 10px;
+    height: 12px;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.probability-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+.probability-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.reset-button {
+    background: #1a1a2e;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.reset-button:hover {
+    background: #2d2d5e;
+}
