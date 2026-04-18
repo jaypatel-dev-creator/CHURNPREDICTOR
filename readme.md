@@ -7,8 +7,8 @@ A full-stack machine learning application that predicts customer churn for a tel
 ## Live Demo
 
 - **Frontend:** [Vercel URL]
-- **Backend API:** [Render URL]
-- **API Docs:** [Render URL]/docs
+- **Backend API:** [\[Render URL\]](https://churnpredictor-6vzb.onrender.com/)
+- **API Docs:** [Render URL](https://churnpredictor-6vzb.onrender.com/docs)
 
 ---
 
