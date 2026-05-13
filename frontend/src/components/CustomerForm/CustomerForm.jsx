@@ -1,4 +1,4 @@
-// src/components/CustomerForm/CustomerForm.jsx
+
 
 import { useState } from "react"
 import SectionHeader from "../SectionHeader/SectionHeader"
@@ -14,11 +14,11 @@ const INITIAL_STATE = {
     Tenure_in_Months: "",
     Offer: "No Offer",
     Phone_Service: "Yes",
-    Avg_Monthly_Long_Distance_Charges: 0,      // changed from "" to 0
+    Avg_Monthly_Long_Distance_Charges: 0,      
     Multiple_Lines: "No",
     Internet_Service: "Yes",
     Internet_Type: "Fiber Optic",
-    Avg_Monthly_GB_Download: 0,                // changed from "" to 0
+    Avg_Monthly_GB_Download: 0,                
     Online_Security: "No",
     Online_Backup: "No",
     Device_Protection_Plan: "No",
@@ -39,10 +39,11 @@ const INITIAL_STATE = {
 }
 
 const CustomerForm = ({ onResult }) => {
-    const [formData, setFormData] = useState(INITIAL_STATE)
+    const [formData, setFormData] = useState(INITIAL_STATE) //state to store all the fields  that user fill in the form 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
-
+ 
+     // function to  update  fields 
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData(prev => ({
@@ -52,9 +53,9 @@ const CustomerForm = ({ onResult }) => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
-        setError(null)
+        e.preventDefault() // to prevent form from being loaded 
+        setLoading(true) // loading spinner till no response from api => Good UX 
+        setError(null) // by default , no error 
 
         try {
             const payload = {
@@ -73,7 +74,7 @@ const CustomerForm = ({ onResult }) => {
                 Total_Revenue: Number(formData.Total_Revenue)
             }
 
-            const result = await predictChurn(payload)
+            const result = await predictChurn(payload) //passing payload as argument 
             onResult(result)
 
         } catch (err) {

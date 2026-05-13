@@ -1,4 +1,3 @@
-// src/App.jsx
 
 import { useState } from "react"
 import CustomerForm from "./components/CustomerForm/CustomerForm"
@@ -6,13 +5,13 @@ import ResultCard from "./components/ResultCard/ResultCard"
 import "./App.css"
 
 const App = () => {
-    const [result, setResult] = useState(null)
+    const [result, setResult] = useState(null) //result state initally set as null
 
     const handleResult = (predictionResult) => {
         setResult(predictionResult)
     }
 
-    const handleReset = () => {
+    const handleReset = () => { //to reset the result state 
         setResult(null)
     }
 

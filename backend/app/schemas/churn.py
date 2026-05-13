@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+#request schema 
 class CustomerFeatures(BaseModel):
     Gender: str
     Age: int
@@ -32,6 +33,7 @@ class CustomerFeatures(BaseModel):
     Total_Long_Distance_Charges: float
     Total_Revenue: float
 
+# response schema 
 class PredictionResponse(BaseModel):
     churn_probability: float
     prediction: str

@@ -17,9 +17,16 @@ A full-stack machine learning application that predicts customer churn for a tel
 ```text
 churn-predictor/
 ├── backend/
-│   ├── main.py
-│   ├── model.py
-│   ├── schemas.py
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── routes/
+│   │   │   └── predict.py
+│   │   ├── services/
+│   │   │   └── predictor.py
+│   │   ├── schemas/
+│   │   │   └── churn.py
+│   │   └── models/
+│   │       └── loader.py
 │   ├── churn_model.pkl
 │   ├── requirements.txt
 │   └── Dockerfile
@@ -36,6 +43,7 @@ churn-predictor/
 │   └── package.json
 └── README.md
 ```
+
 ---
 
 ## How It Works
@@ -67,7 +75,6 @@ The prediction model is a tuned LightGBM pipeline trained on the [Maven Analytic
 
 **Note on input ranges:**
 The model was trained on a specific data distribution. Numeric inputs are validated against their training-set ranges — for example, Age (19–80), Tenure in Months (1–72), Monthly Charge (-10 to 118.75), and usage-related fields. Inputs outside these ranges will still return a prediction but reliability decreases as values move further from the training distribution. Frontend validation enforces these constraints where applicable to reduce out-of-distribution inputs.
-
 
 For full model development details — EDA, preprocessing decisions, model comparison, SHAP analysis — see the [research notebook](https://github.com/jaypatel-dev-creator/telecom_customer_churn_prediction_dt).
 
@@ -134,9 +141,8 @@ Response:
 ```bash
 cd backend
 docker build -t churn-predictor .
-docker run -p 8000:8000 churn-predictor
+docker run -p 8000:8000 -w /backend churn-predictor
 ```
-
 
 **Frontend**
 ```bash
@@ -149,6 +155,7 @@ Add `.env` file in frontend root:
 VITE_API_URL=http://localhost:8000
 
 ---
+
 ## Known Limitations
 
 **Render cold starts**

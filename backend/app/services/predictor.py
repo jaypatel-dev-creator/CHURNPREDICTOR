@@ -1,9 +1,8 @@
-from functools import lru_cache
-import joblib
 import pandas as pd
+from app.models.loader import load_model
 
 THRESHOLD = 0.5784
-
+# pydantic schema used underscore in fields cause pydantic dont allows spaces in field names, but model was trained on spaces in column names, so COLUMN_MAP will remap underscore_keys to spaced column names otherwise model wont able to predict 
 COLUMN_MAP = {
     "Gender": "Gender",
     "Age": "Age",
@@ -37,25 +36,13 @@ COLUMN_MAP = {
     "Total_Revenue": "Total Revenue"
 }
 
-# load the model only once and then cache it for subsequent call 
-@lru_cache(maxsize=1)
-def load_model():
-    return joblib.load("churn_model.pkl")
-
 def predict_churn(features: dict) -> dict:
     model = load_model()
-
-    ## remap underscore keys to spaced column names
     mapped = {COLUMN_MAP[k]: v for k, v in features.items()}
-
-    ## create dataframe with correct column order
-    input_df = pd.DataFrame([mapped])
-
-    ## predict
-    proba = model.predict_proba(input_df)[0][1]
+    input_df = pd.DataFrame([mapped]) # converting input data which is in dict to dataframe cause dict does not represent rows and cols and our model expects rows and cols 
+    proba = model.predict_proba(input_df)[0][1] # predict probablity of 1st row (the row as input ) and second column ie class 1/ positive class  (churned )
     prediction = "Churned" if proba >= THRESHOLD else "Stayed"
 
-    ## risk level
     if proba >= 0.75:
         risk_level = "High Risk"
     elif proba >= THRESHOLD:
