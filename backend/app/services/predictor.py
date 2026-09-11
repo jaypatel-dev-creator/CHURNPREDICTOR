@@ -44,6 +44,11 @@ def predict_churn(features: dict) -> dict:
     settings = get_settings()
     threshold = settings.churn_threshold
 
+    # explicit guard — surface unmapped keys as a clear ValueError instead of a bare KeyError
+    missing = [k for k in features if k not in COLUMN_MAP]
+    if missing:
+        raise ValueError(f"Unrecognised feature key(s) with no column mapping: {missing}")
+
     mapped = {COLUMN_MAP[k]: v for k, v in features.items()}
     # dict does not represent rows and cols — DataFrame wraps input into the shape
     # the sklearn pipeline expects (single-row, named columns matching training data)
