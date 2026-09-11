@@ -1,14 +1,33 @@
 # Customer Churn Predictor
 
-A full-stack machine learning application that predicts customer churn for a telecom provider. Built with a LightGBM inference backend served via FastAPI, containerised with Docker, and deployed with a React frontend.
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.135.3-009688?logo=fastapi&logoColor=white)
+![LightGBM](https://img.shields.io/badge/LightGBM-4.6.0-0175C2?logoColor=white)
+![scikit--learn](https://img.shields.io/badge/scikit--learn-1.6.1-F7931E?logo=scikit-learn&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![Docker](https://img.shields.io/badge/Docker-Containerised-2496ED?logo=docker&logoColor=white)
+![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?logo=render&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white)
+
+A full-stack ML inference application that predicts customer churn for a telecom provider. A pre-trained LightGBM pipeline is serialized as a joblib artifact and served via a FastAPI backend — containerized with Docker and deployed on Render. The React frontend collects 30 customer features and displays the churn probability, prediction label, and risk tier.
+
+- **Frontend:** [churnpredictor-zeta.vercel.app](https://churnpredictor-zeta.vercel.app/)
+- **Backend API:** [churnpredictor-6vzb.onrender.com](https://churnpredictor-6vzb.onrender.com/)
+- **API Docs:** [churnpredictor-6vzb.onrender.com/docs](https://churnpredictor-6vzb.onrender.com/docs)
+
+> ⚠️ Hosted on Render free tier — first request may take 30–60 seconds to cold start.
 
 ---
 
-## Live Demo
+## How It Works
 
-- **Frontend:** [Vercel URL](https://churnpredictor-zeta.vercel.app/)
-- **Backend API:** [Render URL](https://churnpredictor-6vzb.onrender.com/)
-- **API Docs:** [Render URL/docs](https://churnpredictor-6vzb.onrender.com/docs)
+1. User fills in 30 customer feature fields across five sections — personal info, account, phone services, internet services, and billing
+2. React frontend sends a POST request to `/predict`
+3. FastAPI validates input via Pydantic — field types, numeric ranges, and allowed categorical values are all enforced server-side. Invalid inputs return a `422` before reaching the model
+4. Validated features are remapped from underscore-keyed schema fields to space-separated column names matching the model's training data
+5. The LightGBM pipeline preprocesses and scores the input, returning a churn probability
+6. Probability is compared against the tuned threshold (0.5784) to produce a prediction label and risk tier
+7. Result is rendered as a risk badge, prediction label, and probability bar
 
 ---
 
@@ -18,17 +37,20 @@ A full-stack machine learning application that predicts customer churn for a tel
 churn-predictor/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py
+│   │   ├── main.py              # FastAPI app, CORS, lifespan
+│   │   ├── core/
+│   │   │   └── config.py        # Pydantic BaseSettings — all env vars
 │   │   ├── routes/
-│   │   │   └── predict.py
+│   │   │   └── predict.py       # POST /predict, GET /health
 │   │   ├── services/
-│   │   │   └── predictor.py
+│   │   │   └── predictor.py     # inference logic, COLUMN_MAP, risk tiers
 │   │   ├── schemas/
-│   │   │   └── churn.py
+│   │   │   └── churn.py         # request/response Pydantic models
 │   │   └── models/
-│   │       └── loader.py
-│   ├── churn_model.pkl
+│   │       └── loader.py        # joblib model loader (lru_cache)
+│   ├── churn_model.pkl          # serialized LightGBM pipeline artifact
 │   ├── requirements.txt
+│   ├── .env.example
 │   └── Dockerfile
 ├── frontend/
 │   ├── src/
@@ -46,22 +68,11 @@ churn-predictor/
 
 ---
 
-## How It Works
-
-1. User fills in customer details across five sections — personal info, account, phone services, internet services, and billing
-2. React frontend sends a POST request to the FastAPI `/predict` endpoint
-3. FastAPI validates the input using Pydantic, passes it to the LightGBM pipeline
-4. The pipeline preprocesses the input and returns a churn probability
-5. Probability is compared against the tuned threshold (0.5784) to produce a prediction and risk label
-6. Result is displayed as a risk badge, prediction label, and probability bar
-
----
-
 ## Model
 
 The prediction model is a tuned LightGBM pipeline trained on the [Maven Analytics Telecom Churn dataset](https://www.kaggle.com/datasets/shilongzhuang/telecom-customer-churn-by-maven-analytics).
 
-- Full sklearn `Pipeline` — preprocessor + model in a single object
+- Full sklearn `Pipeline` — preprocessor + model serialized as a single joblib artifact
 - `OneHotEncoder(drop='first')` for 18 categorical features
 - Numerical features passed through without scaling
 - Tuned via `GridSearchCV` with `StratifiedKFold(n_splits=5)`, scoring on `average_precision`
@@ -72,9 +83,6 @@ The prediction model is a tuned LightGBM pipeline trained on the [Maven Analytic
 - PR-AUC: 0.8463
 - Churn Precision: 0.76 (at tuned threshold)
 - Churn Recall: 0.73 (at tuned threshold)
-
-**Note on input ranges:**
-The model was trained on a specific data distribution. Numeric inputs are validated against their training-set ranges — for example, Age (19–80), Tenure in Months (1–72), Monthly Charge (-10 to 118.75), and usage-related fields. Inputs outside these ranges will still return a prediction but reliability decreases as values move further from the training distribution. Frontend validation enforces these constraints where applicable to reduce out-of-distribution inputs.
 
 For full model development details — EDA, preprocessing decisions, model comparison, SHAP analysis — see the [research notebook](https://github.com/jaypatel-dev-creator/telecom_customer_churn_prediction_dt).
 
@@ -116,16 +124,16 @@ Response:
 ## Tech Stack
 
 **Backend**
-- FastAPI
-- LightGBM
-- scikit-learn
-- pandas
-- joblib
-- Pydantic
+- FastAPI 0.135.3
+- LightGBM 4.6.0
+- scikit-learn 1.6.1
+- pandas 3.0.2
+- joblib 1.5.3
+- Pydantic 2.13.0 + pydantic-settings 2.15.0
 - Docker
 
 **Frontend**
-- React 18
+- React 19
 - Vite
 - CSS
 
@@ -140,9 +148,14 @@ Response:
 **Backend**
 ```bash
 cd backend
-docker build -t churn-predictor .
-docker run -p 8000:8000 -w /backend churn-predictor
+python -m venv venv
+source venv/bin/activate       # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env           # defaults work out of the box for local dev
+uvicorn app.main:app --reload --port 8000
 ```
+
+Swagger docs: `http://localhost:8000/docs`
 
 **Frontend**
 ```bash
@@ -151,21 +164,20 @@ npm install
 npm run dev
 ```
 
-Add `.env` file in frontend root:
+Add `.env` in `frontend/`:
+```
 VITE_API_URL=http://localhost:8000
+```
 
 ---
 
 ## Known Limitations
 
 **Render cold starts**
-The backend is deployed on Render's free tier. If the service has been inactive for 15+ minutes, the first request will take 30–60 seconds to respond while the container spins back up. Subsequent requests are fast. This is a free tier limitation and would not occur on a paid instance.
-
-**Input range constraints**
-The model was trained on a specific data distribution. Numeric inputs are validated against dataset-based ranges — Age (19–80), Tenure (1–72 months), Monthly Charge (-10 to 118.75), and usage-related fields. Predictions for inputs outside these ranges may be less reliable.
+The backend is deployed on Render's free tier. If the service has been inactive for 15+ minutes, the first request will take 30–60 seconds while the container spins back up. Subsequent requests are fast. This is a free-tier limitation and would not occur on a paid instance.
 
 **Model retraining**
-The current model is a static artifact trained on a fixed dataset snapshot. Customer behaviour changes over time — model performance may degrade without periodic retraining on fresh data.
+The current model is a static artifact trained on a fixed dataset snapshot. Customer behaviour changes over time — model performance may degrade without periodic retraining on fresh data. If the model is retrained with different feature ranges or categories, `schemas/churn.py` must be updated alongside the artifact.
 
 ---
 
