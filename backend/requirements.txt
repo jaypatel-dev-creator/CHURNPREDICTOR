@@ -6,4 +6,5 @@ scikit-learn==1.6.1
 pandas
 numpy
 pydantic
+pydantic-settings
 python-dotenv

@@ -1,8 +1,10 @@
 import pandas as pd
 from app.models.loader import load_model
+from app.core.config import get_settings
 
-THRESHOLD = 0.5784
-# pydantic schema used underscore in fields cause pydantic dont allows spaces in field names, but model was trained on spaces in column names, so COLUMN_MAP will remap underscore_keys to spaced column names otherwise model wont able to predict 
+# pydantic schema used underscore in fields cause pydantic dont allows spaces in field names,
+# but model was trained on spaces in column names, so COLUMN_MAP remaps underscore_keys to
+# spaced column names — otherwise the model pipeline won't recognise the input features.
 COLUMN_MAP = {
     "Gender": "Gender",
     "Age": "Age",
@@ -33,19 +35,27 @@ COLUMN_MAP = {
     "Total_Refunds": "Total Refunds",
     "Total_Extra_Data_Charges": "Total Extra Data Charges",
     "Total_Long_Distance_Charges": "Total Long Distance Charges",
-    "Total_Revenue": "Total Revenue"
+    "Total_Revenue": "Total Revenue",
 }
+
 
 def predict_churn(features: dict) -> dict:
     model = load_model()
+    settings = get_settings()
+    threshold = settings.churn_threshold
+
     mapped = {COLUMN_MAP[k]: v for k, v in features.items()}
-    input_df = pd.DataFrame([mapped]) # converting input data which is in dict to dataframe cause dict does not represent rows and cols and our model expects rows and cols 
-    proba = model.predict_proba(input_df)[0][1] # predict probablity of 1st row (the row as input ) and second column ie class 1/ positive class  (churned )
-    prediction = "Churned" if proba >= THRESHOLD else "Stayed"
+    # dict does not represent rows and cols — DataFrame wraps input into the shape
+    # the sklearn pipeline expects (single-row, named columns matching training data)
+    input_df = pd.DataFrame([mapped])
+
+    # predict_proba returns [[prob_class_0, prob_class_1]] — index [0][1] gives churn probability
+    proba = model.predict_proba(input_df)[0][1]
+    prediction = "Churned" if proba >= threshold else "Stayed"
 
     if proba >= 0.75:
         risk_level = "High Risk"
-    elif proba >= THRESHOLD:
+    elif proba >= threshold:
         risk_level = "Medium Risk"
     else:
         risk_level = "Low Risk"
@@ -53,5 +63,5 @@ def predict_churn(features: dict) -> dict:
     return {
         "churn_probability": round(float(proba), 4),
         "prediction": prediction,
-        "risk_level": risk_level
+        "risk_level": risk_level,
     }
