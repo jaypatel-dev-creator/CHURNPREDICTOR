@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.predict import router
 from app.models.loader import load_model
@@ -40,11 +40,7 @@ app.add_middleware(
 
 @app.get("/health")
 def health():
-    try:
-        model = load_model()
-        return {"status": "ok", "model": "loaded"}
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Model not loaded: {str(e)}")
+    return {"status": "ok"}
 
 
 app.include_router(router)
