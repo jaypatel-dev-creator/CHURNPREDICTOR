@@ -1,10 +1,8 @@
+import warnings
 import pandas as pd
 from app.models.loader import load_model
 from app.core.config import get_settings
 
-# pydantic schema used underscore in fields cause pydantic dont allows spaces in field names,
-# but model was trained on spaces in column names, so COLUMN_MAP remaps underscore_keys to
-# spaced column names — otherwise the model pipeline won't recognise the input features.
 COLUMN_MAP = {
     "Gender": "Gender",
     "Age": "Age",
@@ -44,22 +42,19 @@ def predict_churn(features: dict) -> dict:
     settings = get_settings()
     threshold = settings.churn_threshold
 
-    # explicit guard — surface unmapped keys as a clear ValueError instead of a bare KeyError
     missing = [k for k in features if k not in COLUMN_MAP]
     if missing:
         raise ValueError(f"Unrecognised feature key(s) with no column mapping: {missing}")
 
     mapped = {COLUMN_MAP[k]: v for k, v in features.items()}
-    # dict does not represent rows and cols — DataFrame wraps input into the shape
-    # the sklearn pipeline expects (single-row, named columns matching training data)
-    # .to_numpy() suppresses LightGBM's feature name warning — the pipeline's ColumnTransformer
-    # drops column names internally; passing an array avoids the name-match comparison entirely.
-    # IMPORTANT: column order in mapped is deterministic (COLUMN_MAP insertion order, Python 3.7+)
-    # and must match training column order — if model is retrained, verify order here too.
     input_df = pd.DataFrame([mapped])
 
-    # predict_proba returns [[prob_class_0, prob_class_1]] — index [0][1] gives churn probability
-    proba = model.predict_proba(input_df.to_numpy())[0][1]
+    # the pipeline's ColumnTransformer drops column names internally — LightGBM warns
+    # about missing feature names as a result. the prediction is correct; suppress the noise.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="X does not have valid feature names")
+        proba = model.predict_proba(input_df)[0][1]
+
     prediction = "Churned" if proba >= threshold else "Stayed"
 
     if proba >= 0.75:
