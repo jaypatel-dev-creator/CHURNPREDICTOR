@@ -1,5 +1,3 @@
-
-
 import { useState } from "react"
 import SectionHeader from "../SectionHeader/SectionHeader"
 import { predictChurn } from "../../api/predict"
@@ -34,8 +32,7 @@ const INITIAL_STATE = {
     Total_Charges: "",
     Total_Refunds: 0.0,
     Total_Extra_Data_Charges: 0,
-    Total_Long_Distance_Charges: "",
-    Total_Revenue: ""
+    Total_Long_Distance_Charges: ""
 }
 
 const CustomerForm = ({ onResult }) => {
@@ -58,6 +55,11 @@ const CustomerForm = ({ onResult }) => {
         setError(null) // by default , no error 
 
         try {
+            const totalCharges = Number(formData.Total_Charges)
+            const totalRefunds = Number(formData.Total_Refunds)
+            const totalExtraData = Number(formData.Total_Extra_Data_Charges)
+            const totalLongDistance = Number(formData.Total_Long_Distance_Charges)
+
             const payload = {
                 ...formData,
                 Age: Number(formData.Age),
@@ -67,11 +69,12 @@ const CustomerForm = ({ onResult }) => {
                 Avg_Monthly_Long_Distance_Charges: Number(formData.Avg_Monthly_Long_Distance_Charges),
                 Avg_Monthly_GB_Download: Number(formData.Avg_Monthly_GB_Download),
                 Monthly_Charge: Number(formData.Monthly_Charge),
-                Total_Charges: Number(formData.Total_Charges),
-                Total_Refunds: Number(formData.Total_Refunds),
-                Total_Extra_Data_Charges: Number(formData.Total_Extra_Data_Charges),
-                Total_Long_Distance_Charges: Number(formData.Total_Long_Distance_Charges),
-                Total_Revenue: Number(formData.Total_Revenue)
+                Total_Charges: totalCharges,
+                Total_Refunds: totalRefunds,
+                Total_Extra_Data_Charges: totalExtraData,
+                Total_Long_Distance_Charges: totalLongDistance,
+                // derived — not user-entered; computed from the four billing components
+                Total_Revenue: totalCharges - totalRefunds + totalExtraData + totalLongDistance
             }
 
             const result = await predictChurn(payload) //passing payload as argument 
@@ -375,15 +378,6 @@ const CustomerForm = ({ onResult }) => {
                     />
                 </div>
 
-                <div className="form-group">
-                    <label>Total Revenue ($)</label>
-                    <input
-                        type="number" name="Total_Revenue"
-                        value={formData.Total_Revenue} onChange={handleChange}
-                        min={0} step={0.01} required
-                        placeholder="e.g. 1700.00"
-                    />
-                </div>
             </div>
 
             {error && <p className="error-message">{error}</p>}

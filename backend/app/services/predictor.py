@@ -41,6 +41,7 @@ def predict_churn(features: dict) -> dict:
     model = load_model()
     settings = get_settings()
     threshold = settings.churn_threshold
+    high_risk_threshold = settings.high_risk_threshold
 
     missing = [k for k in features if k not in COLUMN_MAP]
     if missing:
@@ -57,7 +58,7 @@ def predict_churn(features: dict) -> dict:
 
     prediction = "Churned" if proba >= threshold else "Stayed"
 
-    if proba >= 0.75:
+    if proba >= high_risk_threshold:
         risk_level = "High Risk"
     elif proba >= threshold:
         risk_level = "Medium Risk"
