@@ -21,7 +21,7 @@ A full-stack ML inference application that predicts customer churn for a telecom
 
 ## How It Works
 
-1. User fills in 30 customer feature fields across five sections — personal info, account, phone services, internet services, and billing
+1. User fills in 29 customer feature fields across five sections — personal info, account, phone services, internet services, and billing. `Total_Revenue` is the 30th feature but is computed automatically from the four billing component fields — the user never enters it directly
 2. React frontend sends a POST request to `/predict`
 3. FastAPI validates input via Pydantic — field types, numeric ranges, and allowed categorical values are all enforced server-side. Invalid inputs return a `422` before reaching the model
 4. Validated features are remapped from underscore-keyed schema fields to space-separated column names matching the model's training data
@@ -164,9 +164,8 @@ npm install
 npm run dev
 ```
 
-Add `.env` in `frontend/`:
-```
-VITE_API_URL=http://localhost:8000
+```bash
+cp .env.example .env           # defaults work out of the box for local dev
 ```
 
 ---

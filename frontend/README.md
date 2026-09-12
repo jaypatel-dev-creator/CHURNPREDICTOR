@@ -81,7 +81,7 @@ CustomerForm unmounts → ResultCard mounts
 Root component. Owns `result` state — `null` shows the form, a populated object shows the result card. Passes `onResult` down to `CustomerForm` and `onReset` down to `ResultCard`. No routing library — single view toggled by state.
 
 **`CustomerForm.jsx`**
-The main form. Manages `formData` (30 fields), `loading`, and `error` state. On submit, coerces all numeric string inputs to `Number()` before sending — HTML inputs always return strings, the backend expects typed numbers. Required fields: `Age`, `Tenure_in_Months`, `Monthly_Charge`, `Total_Charges`, `Total_Long_Distance_Charges`, `Total_Revenue`. Displays inline error message on API failure.
+The main form. Manages `formData` (30 fields), `loading`, and `error` state. On submit, coerces all numeric string inputs to `Number()` before sending — HTML inputs always return strings, the backend expects typed numbers. Required fields: `Age`, `Tenure_in_Months`, `Monthly_Charge`, `Total_Charges`, `Total_Long_Distance_Charges`. `Total_Revenue` is computed automatically from the billing component fields before the payload is sent. Displays inline error message on API failure.
 
 **`api/predict.js`**
 Thin axios wrapper. Reads `VITE_API_URL` from environment. Returns the response data on success. On failure, extracts `error.response.data.detail` from the FastAPI error response and throws it as a plain `Error` — the form catches and displays this string directly.
@@ -102,7 +102,7 @@ Single-prop reusable component. Renders a styled `<h2>` to divide the form into 
 | Account Information | Tenure in Months, Number of Referrals, Offer, Contract, Paperless Billing, Payment Method |
 | Phone Services | Phone Service, Multiple Lines, Avg Monthly Long Distance Charges |
 | Internet Services | Internet Service, Internet Type, Avg Monthly GB Download, Online Security, Online Backup, Device Protection Plan, Premium Tech Support, Streaming TV, Streaming Movies, Streaming Music, Unlimited Data |
-| Billing Information | Monthly Charge, Total Charges, Total Refunds, Total Extra Data Charges, Total Long Distance Charges, Total Revenue |
+| Billing Information | Monthly Charge, Total Charges, Total Refunds, Total Extra Data Charges, Total Long Distance Charges |
 
 ---
 
