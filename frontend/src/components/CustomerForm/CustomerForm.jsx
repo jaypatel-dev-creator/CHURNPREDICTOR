@@ -1,3 +1,4 @@
+
 import { useState } from "react"
 import SectionHeader from "../SectionHeader/SectionHeader"
 import { predictChurn } from "../../api/predict"
@@ -12,11 +13,11 @@ const INITIAL_STATE = {
     Tenure_in_Months: "",
     Offer: "No Offer",
     Phone_Service: "Yes",
-    Avg_Monthly_Long_Distance_Charges: 0,      
+    Avg_Monthly_Long_Distance_Charges: 0,
     Multiple_Lines: "No",
     Internet_Service: "Yes",
     Internet_Type: "Fiber Optic",
-    Avg_Monthly_GB_Download: 0,                
+    Avg_Monthly_GB_Download: 0,
     Online_Security: "No",
     Online_Backup: "No",
     Device_Protection_Plan: "No",
@@ -36,11 +37,11 @@ const INITIAL_STATE = {
 }
 
 const CustomerForm = ({ onResult }) => {
-    const [formData, setFormData] = useState(INITIAL_STATE) //state to store all the fields  that user fill in the form 
+    const [formData, setFormData] = useState(INITIAL_STATE) //state to store all the fields that user fill in the form
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
- 
-     // function to  update  fields 
+
+    // function to update fields
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData(prev => ({
@@ -50,9 +51,9 @@ const CustomerForm = ({ onResult }) => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault() // to prevent form from being loaded 
-        setLoading(true) // loading spinner till no response from api => Good UX 
-        setError(null) // by default , no error 
+        e.preventDefault() // to prevent form from being loaded
+        setLoading(true) // loading spinner till no response from api => Good UX
+        setError(null) // by default, no error
 
         try {
             const totalCharges = Number(formData.Total_Charges)
@@ -77,7 +78,7 @@ const CustomerForm = ({ onResult }) => {
                 Total_Revenue: totalCharges - totalRefunds + totalExtraData + totalLongDistance
             }
 
-            const result = await predictChurn(payload) //passing payload as argument 
+            const result = await predictChurn(payload) //passing payload as argument
             onResult(result)
 
         } catch (err) {
@@ -124,7 +125,7 @@ const CustomerForm = ({ onResult }) => {
                     <input
                         type="number" name="Number_of_Dependents"
                         value={formData.Number_of_Dependents} onChange={handleChange}
-                        min={0} max={9} 
+                        min={0} max={9}
                         placeholder="0 - 9"
                     />
                 </div>
@@ -149,6 +150,7 @@ const CustomerForm = ({ onResult }) => {
                         type="number" name="Number_of_Referrals"
                         value={formData.Number_of_Referrals} onChange={handleChange}
                         min={0} max={11}
+                        placeholder="0 - 11"
                     />
                 </div>
 
@@ -211,7 +213,6 @@ const CustomerForm = ({ onResult }) => {
                     </select>
                 </div>
 
-                {/* fixed — now properly wrapped in form-group with label */}
                 <div className="form-group">
                     <label>Avg Monthly Long Distance Charges ($)</label>
                     <input
@@ -219,6 +220,7 @@ const CustomerForm = ({ onResult }) => {
                         value={formData.Avg_Monthly_Long_Distance_Charges}
                         onChange={handleChange}
                         min={0} max={49.99} step={0.01}
+                        placeholder="0 - 49.99"
                     />
                 </div>
             </div>
@@ -251,6 +253,7 @@ const CustomerForm = ({ onResult }) => {
                         value={formData.Avg_Monthly_GB_Download}
                         onChange={handleChange}
                         min={0} max={85} step={0.1}
+                        placeholder="0 - 85"
                     />
                 </div>
 
@@ -335,8 +338,8 @@ const CustomerForm = ({ onResult }) => {
                     <input
                         type="number" name="Monthly_Charge"
                         value={formData.Monthly_Charge} onChange={handleChange}
-                        min={-10} step={0.01} required        // added min={-10}
-                        placeholder="e.g. 65.50"
+                        min={-10} max={118.75} step={0.01} required
+                        placeholder="-10 - 118.75"
                     />
                 </div>
 
@@ -345,8 +348,8 @@ const CustomerForm = ({ onResult }) => {
                     <input
                         type="number" name="Total_Charges"
                         value={formData.Total_Charges} onChange={handleChange}
-                        min={0} step={0.01} required
-                        placeholder="e.g. 1200.00"
+                        min={0} max={8684.80} step={0.01} required
+                        placeholder="0 - 8684.80"
                     />
                 </div>
 
@@ -356,6 +359,7 @@ const CustomerForm = ({ onResult }) => {
                         type="number" name="Total_Refunds"
                         value={formData.Total_Refunds} onChange={handleChange}
                         min={0} max={49.79} step={0.01}
+                        placeholder="0 - 49.79"
                     />
                 </div>
 
@@ -365,6 +369,7 @@ const CustomerForm = ({ onResult }) => {
                         type="number" name="Total_Extra_Data_Charges"
                         value={formData.Total_Extra_Data_Charges} onChange={handleChange}
                         min={0} max={150}
+                        placeholder="0 - 150"
                     />
                 </div>
 
@@ -373,11 +378,10 @@ const CustomerForm = ({ onResult }) => {
                     <input
                         type="number" name="Total_Long_Distance_Charges"
                         value={formData.Total_Long_Distance_Charges} onChange={handleChange}
-                        min={0} step={0.01} required
-                        placeholder="e.g. 500.00"
+                        min={0} max={3564.72} step={0.01} required
+                        placeholder="0 - 3564.72"
                     />
                 </div>
-
             </div>
 
             {error && <p className="error-message">{error}</p>}
@@ -390,4 +394,4 @@ const CustomerForm = ({ onResult }) => {
     )
 }
 
-export default CustomerForm
+export default CustomerForm;

@@ -23,7 +23,10 @@ A full-stack ML inference application that predicts customer churn for a telecom
 
 1. User fills in 29 customer feature fields across five sections — personal info, account, phone services, internet services, and billing. `Total_Revenue` is the 30th feature but is computed automatically from the four billing component fields — the user never enters it directly
 2. React frontend sends a POST request to `/predict`
-3. FastAPI validates input via Pydantic — field types, numeric ranges, and allowed categorical values are all enforced server-side. Invalid inputs return a `422` before reaching the model
+3. FastAPI validates input via Pydantic — enforcing feature consistency with the training data at the schema level:
+   - **Numeric features** — every field has both a floor and ceiling matching the exact range seen during training (e.g. `Age: 19–80`, `Tenure_in_Months: 1–72`, `Total_Charges: 0–8684.80`). Out-of-range values return a `422` before reaching the model
+   - **Categorical features** — every field is a strict `Literal` type accepting only the exact values the model was trained on (e.g. `Contract: "Month-to-Month" | "One Year" | "Two Year"`). Any unlisted value is rejected at the schema level
+   - This same constraint is enforced in the frontend: numeric inputs have `min`/`max` attributes with placeholders showing the allowed range, and categorical inputs are dropdowns restricted to valid options only — so invalid data is blocked at the UI level before it ever reaches the API
 4. Validated features are remapped from underscore-keyed schema fields to space-separated column names matching the model's training data
 5. The LightGBM pipeline preprocesses and scores the input, returning a churn probability
 6. Probability is compared against the tuned threshold (0.5784) to produce a prediction label and risk tier

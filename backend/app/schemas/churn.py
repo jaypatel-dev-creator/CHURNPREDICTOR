@@ -39,10 +39,10 @@ class CustomerFeatures(BaseModel):
 
     # --- Billing ---
     Monthly_Charge: float = Field(..., ge=-10.0, le=118.75)
-    Total_Charges: float = Field(..., ge=0.0)
+    Total_Charges: float = Field(..., ge=0.0, le=8684.80)
     Total_Refunds: float = Field(..., ge=0.0, le=49.79)
     Total_Extra_Data_Charges: int = Field(..., ge=0, le=150)
-    Total_Long_Distance_Charges: float = Field(..., ge=0.0)
+    Total_Long_Distance_Charges: float = Field(..., ge=0.0, le=3564.72)
     Total_Revenue: float = Field(..., ge=0.0)
 
 
