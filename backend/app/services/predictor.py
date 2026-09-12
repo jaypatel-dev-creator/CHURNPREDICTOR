@@ -52,10 +52,14 @@ def predict_churn(features: dict) -> dict:
     mapped = {COLUMN_MAP[k]: v for k, v in features.items()}
     # dict does not represent rows and cols — DataFrame wraps input into the shape
     # the sklearn pipeline expects (single-row, named columns matching training data)
+    # .to_numpy() suppresses LightGBM's feature name warning — the pipeline's ColumnTransformer
+    # drops column names internally; passing an array avoids the name-match comparison entirely.
+    # IMPORTANT: column order in mapped is deterministic (COLUMN_MAP insertion order, Python 3.7+)
+    # and must match training column order — if model is retrained, verify order here too.
     input_df = pd.DataFrame([mapped])
 
     # predict_proba returns [[prob_class_0, prob_class_1]] — index [0][1] gives churn probability
-    proba = model.predict_proba(input_df)[0][1]
+    proba = model.predict_proba(input_df.to_numpy())[0][1]
     prediction = "Churned" if proba >= threshold else "Stayed"
 
     if proba >= 0.75:
