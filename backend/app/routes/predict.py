@@ -7,12 +7,9 @@ router = APIRouter()
 @router.post("/predict", response_model=PredictionResponse)
 def predict(customer: CustomerFeatures):
     try:
-        # converting pydantic object to py dictionary — predict_churn expects a dict
-        features = customer.model_dump()
-        result = predict_churn(features)
-        return result
-    except ValueError as e:
-        # raised by predict_churn when a feature key has no column mapping
-        raise HTTPException(status_code=422, detail=str(e))
+        # by_alias=True renames fields to the model's training column names
+        # (e.g. Number_of_Dependents -> "Number of Dependents"); predict_churn expects a dict
+        features = customer.model_dump(by_alias=True)
+        return predict_churn(features)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

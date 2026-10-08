@@ -1,0 +1,15 @@
+Read in this order:
+
+backend/app/core/config.py — all env vars and validation rules. Understand the settings shape first.
+backend/app/schemas/churn.py — the contract. Every feature, its type, its range, its allowed values. This is the ML boundary.
+backend/app/models/loader.py — how the artifact is loaded and cached. One read, stays in memory.
+backend/app/services/predictor.py — the core logic. COLUMN_MAP, DataFrame construction, predict_proba, threshold application, risk tier logic. This is the most important file.
+backend/app/routes/predict.py — how the request flows in, how errors are differentiated, how the response goes out.
+backend/app/main.py — CORS, lifespan, router registration. Read last — it's just wiring.
+
+Frontend — only these two:
+
+frontend/src/api/predict.js — the API call. One function, understand the payload shape and how errors surface.
+frontend/src/components/CustomerForm/CustomerForm.jsx — handleSubmit only. How the payload is built, how Total_Revenue is derived, how the result is passed up.
+
+That's it. Skip App.jsx, ResultCard, SectionHeader, CSS — irrelevant for an AI engineer.

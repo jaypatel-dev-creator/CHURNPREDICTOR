@@ -1,9 +1,17 @@
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import AliasGenerator, BaseModel, ConfigDict, Field
 
 
 # request schema
 class CustomerFeatures(BaseModel):
+    # Fields use underscores (valid Python identifiers; this is what the API accepts).
+    # model_dump(by_alias=True) renames them to the original training column names,
+    # e.g. Number_of_Dependents -> "Number of Dependents", so no separate mapping table is needed.
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            serialization_alias=lambda name: name.replace("_", " ")
+        )
+    )
 
     # --- Personal ---
     Gender: Literal["Male", "Female"]
