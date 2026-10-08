@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pydantic import field_validator, model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,16 +10,14 @@ class Settings(BaseSettings):
 
     # Model
     model_path: str = "churn_model.pkl"             # path to the serialized LightGBM pipeline artifact
-    churn_threshold: float = 0.5784                 # decision boundary tuned via Precision-Recall curve — Medium Risk floor
-    high_risk_threshold: float = 0.75               # probabilities at or above this are classified as High Risk
 
-    @field_validator("churn_threshold", "high_risk_threshold")
-    @classmethod
-    def threshold_must_be_valid(cls, v: float) -> float:
-        if not (0.0 <= v <= 1.0):
-            raise ValueError(f"threshold must be between 0.0 and 1.0, got {v}")
-        return v
+    # decision boundary tuned via Precision-Recall curve — Medium Risk floor
+    churn_threshold: float = Field(default=0.5784, ge=0.0, le=1.0)
 
+    # probabilities at or above this are classified as High Risk
+    high_risk_threshold: float = Field(default=0.75, ge=0.0, le=1.0)
+
+    # cross-field rule: needs both values, so it can't be a per-field constraint
     @model_validator(mode="after")
     def high_risk_must_exceed_churn_threshold(self) -> "Settings":
         if self.high_risk_threshold <= self.churn_threshold:
