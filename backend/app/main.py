@@ -12,15 +12,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-def build_origins() -> list[str]:
-    settings = get_settings()
-    origins = [settings.frontend_url]
-    if settings.app_env == "development":
-        # ensure localhost is always present in development even if frontend_url was overridden
-        if "localhost" not in settings.frontend_url:
-            origins.append("http://localhost:5173")
-    return origins
-
+settings = get_settings()
 
 app = FastAPI(
     title="Customer Churn Prediction API",
@@ -31,7 +23,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=build_origins(),  # driven by config — no hardcoded URLs
+    allow_origins=[settings.frontend_url],  
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],

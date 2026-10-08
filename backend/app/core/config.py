@@ -5,7 +5,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # App
-    app_env: str = "development"                    # prod: set to "production" on Render dashboard
     frontend_url: str = "http://localhost:5173"     # prod: set to deployed Vercel URL on Render dashboard
 
     # Model
